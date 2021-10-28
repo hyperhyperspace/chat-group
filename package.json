@@ -1,0 +1,10 @@
+{
+  "name": "chat-group",
+  "version": "0.1.0",
+  "description": "A moderated chat group represented as an Hyper Hyper Space object.",
+  "main": "dist/index.js",
+  "repository": "https://github.com/hyperhyperspace/chat-group",
+  "author": "Santiago Bazerque",
+  "license": "MIT",
+  "private": false
+}
