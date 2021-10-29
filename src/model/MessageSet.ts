@@ -1,9 +1,9 @@
-import { Identity, MutableSet } from '@hyper-hyper-space/core';
+import { Identity, ReversibleSet } from '@hyper-hyper-space/core';
 import { Message } from './Message';
 import { UserSet } from './UserSet';
 
 
-class MessageSet extends MutableSet<Message> {
+class MessageSet extends ReversibleSet<Message> {
 
     users?: UserSet;
 
