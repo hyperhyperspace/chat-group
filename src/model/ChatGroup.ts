@@ -7,8 +7,8 @@ class ChatGroup extends HashedObject implements SpaceEntryPoint {
     
     static className = 'chat-group/v0/model/ChatGroup';
 
-    admins?  : CausalSet<Identity>;
-    members? : MemberSet;
+    moderators? : CausalSet<Identity>;
+    members?    : MemberSet;
 
     enabledFeatures?: MultiAuthorCausalSet<Feature>;
 
@@ -25,41 +25,41 @@ class ChatGroup extends HashedObject implements SpaceEntryPoint {
             this.setRandomId();
             this.setAuthor(owner);
 
-            this.admins = new SingleAuthorCausalSet<Identity>(owner, [Identity.className]);
-            this.addDerivedField('admins', this.admins);
+            this.moderators = new SingleAuthorCausalSet<Identity>(owner, [Identity.className]);
+            this.addDerivedField('moderators', this.moderators);
 
-            this.enabledFeatures = new MultiAuthorCausalSet(this.admins, ['string'], AllFeatures);
+            this.enabledFeatures = new MultiAuthorCausalSet(this.moderators, ['string'], AllFeatures);
             this.addDerivedField('enabledFeatures', this.enabledFeatures);
 
-            this.members = new MemberSet(this.admins, this.enabledFeatures);
+            this.members = new MemberSet(this.moderators, this.enabledFeatures);
             this.addDerivedField('members', this.members);
 
-            this.messages = new MessageSet(this.admins, this.members);
+            this.messages = new MessageSet(this.moderators, this.members);
             this.addDerivedField('messages', this.messages);
         }
 
     }
 
     init(): void {
-        this._mutables = [this.admins, this.enabledFeatures, this.members, this.members] as Array<MutableObject>;
+        this._mutables = [this.moderators, this.enabledFeatures, this.members, this.members] as Array<MutableObject>;
     }
 
     async validate(references: Map<string, HashedObject>): Promise<boolean> {
         references;
 
-        if (!this.checkDerivedField('admins')) {
+        if (!this.checkDerivedField('moderators')) {
             return false;
         }
 
-        if (!(this.admins instanceof SingleAuthorCausalSet)) {
+        if (!(this.moderators instanceof SingleAuthorCausalSet)) {
             return false;
         }
 
-        if (!((this.getAuthor() as Identity).equals(this.admins.getAuthor()))) {
+        if (!((this.getAuthor() as Identity).equals(this.moderators.getAuthor()))) {
             return false;
         }
 
-        if (!this.admins.checkAcceptedElementsIsMissing() || !this.admins.checkAcceptedTypes([Identity.className])) {
+        if (!this.moderators.checkAcceptedElementsIsMissing() || !this.moderators.checkAcceptedTypes([Identity.className])) {
             return false;
         }
 
@@ -79,7 +79,7 @@ class ChatGroup extends HashedObject implements SpaceEntryPoint {
             return false;
         }
 
-        if (!this.getAdmins().equals(this.enabledFeatures.getAuthorizedIdentitiesSet())) {
+        if (!this.getModerators().equals(this.enabledFeatures.getAuthorizedIdentitiesSet())) {
             return false;
         }
 
@@ -91,7 +91,7 @@ class ChatGroup extends HashedObject implements SpaceEntryPoint {
             return false;
         }
 
-        if (!this.getAdmins().equals(this.members.getAdmins())) {
+        if (!this.getModerators().equals(this.members.getModerators())) {
             return false;
         }
 
@@ -107,7 +107,7 @@ class ChatGroup extends HashedObject implements SpaceEntryPoint {
             return false;
         }
 
-        if (!(this.getAdmins().equals(this.getMessages().getAdmins()))) {
+        if (!(this.getModerators().equals(this.getMessages().getAdmins()))) {
             return false;
         }
 
@@ -143,8 +143,8 @@ class ChatGroup extends HashedObject implements SpaceEntryPoint {
         this._node.sync(this);
     }
 
-    getAdmins() {
-        return this.admins as SingleAuthorCausalSet<Identity>;
+    getModerators() {
+        return this.moderators as SingleAuthorCausalSet<Identity>;
     }
 
     getMembers() {

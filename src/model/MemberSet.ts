@@ -2,20 +2,18 @@ import { Authorizer, Authorization, CausalSet, Hash, HashedObject, Identity } fr
 
 import { Feature } from './ChatConfig';
 
-// an admin managed set with an exception: members may remove themselves
-
 class MemberSet extends CausalSet<Identity> {
 
     static className = 'chat-group/v0/model/MemberSet';
 
-    admins?          : CausalSet<Identity>;
+    moderators?      : CausalSet<Identity>;
     enabledFeatures? : CausalSet<Feature>;
     
-    constructor(admins?: CausalSet<Identity>, enabledFeatures?: CausalSet<Feature>) {
+    constructor(moderators?: CausalSet<Identity>, enabledFeatures?: CausalSet<Feature>) {
         super([Identity.className]);
 
-        if (admins !== undefined) {
-            this.admins = admins;
+        if (moderators !== undefined) {
+            this.moderators = moderators;
 
             if (enabledFeatures === undefined) {
                 throw new Error('A MemberSet cannot be constructed without an enabledFeatures parameter');
@@ -61,7 +59,7 @@ class MemberSet extends CausalSet<Identity> {
             return false;
         }
         
-        if (this.admins === undefined || !(this.admins instanceof CausalSet)) {
+        if (this.moderators === undefined || !(this.moderators instanceof CausalSet)) {
             return false;
         }
 
@@ -73,8 +71,8 @@ class MemberSet extends CausalSet<Identity> {
 
     }
 
-    getAdmins() {
-        return this.admins as CausalSet<Identity>;
+    getModerators() {
+        return this.moderators as CausalSet<Identity>;
     }
 
     getEnabledFeatures() {
@@ -84,14 +82,14 @@ class MemberSet extends CausalSet<Identity> {
     createAddAuthorizer(who: Identity, author: Identity): Authorizer {
 
 
-        const adminAdd  = this.getAdmins().createMembershipAuthorizer(author);
+        const moderatorAdd  = this.getModerators().createMembershipAuthorizer(author);
 
         const memberAdd = Authorization.all([
                 this.getEnabledFeatures().createMembershipAuthorizer(Feature.MemberInvites),
                 this.createMembershipAuthorizer(author)]);
 
 
-        const alternatives = [adminAdd, memberAdd];
+        const alternatives = [moderatorAdd, memberAdd];
 
         if (who.equals(author)) {
             const selfAdd = this.getEnabledFeatures().createMembershipAuthorizer(Feature.OpenNewMembers);
@@ -106,9 +104,9 @@ class MemberSet extends CausalSet<Identity> {
 
     createDeleteAuthorizerByHash(who: Hash, author: Identity) {
 
-        const adminDelete = this.getAdmins().createMembershipAuthorizer(author);
+        const moderatorDelete = this.getModerators().createMembershipAuthorizer(author);
 
-        const alternatives = [adminDelete];
+        const alternatives = [moderatorDelete];
 
         // allow a member to delete themselves
         if (who === author.hash()) {

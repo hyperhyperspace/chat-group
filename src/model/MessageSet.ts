@@ -6,14 +6,14 @@ class MessageSet extends CausalSet<Message> {
 
     static className = 'chat-group/v0/model/MessageSet';
 
-    admins?: CausalSet<Identity>;
-    members?: CausalSet<Identity>;
+    moderators? : CausalSet<Identity>;
+    members?    : CausalSet<Identity>;
 
-    constructor(admins?: CausalSet<Identity>, members?: CausalSet<Identity>) {
+    constructor(moderators?: CausalSet<Identity>, members?: CausalSet<Identity>) {
         super([Message.className]);
 
-        if (admins !== undefined) {
-            this.admins = admins;
+        if (moderators !== undefined) {
+            this.moderators = moderators;
 
             if (members === undefined) {
                 throw new Error('MessageSet: cannot construct without a members set');
@@ -44,11 +44,11 @@ class MessageSet extends CausalSet<Message> {
             return false;
         }
 
-        if (this.admins === undefined) {
+        if (this.moderators === undefined) {
             return false;
         }
 
-        if (!(this.admins instanceof CausalSet)) {
+        if (!(this.moderators instanceof CausalSet)) {
             return false;
         }
 
@@ -80,7 +80,7 @@ class MessageSet extends CausalSet<Message> {
     }
 
     getAdmins() {
-        return this.admins as CausalSet<Identity>;
+        return this.moderators as CausalSet<Identity>;
     }
 
     getMembers() {
@@ -107,7 +107,7 @@ class MessageSet extends CausalSet<Message> {
 
     protected createDeleteAuthorizer(msg: Message, author: Identity): Authorizer {
 
-        // any member may delete their own messages, but only admins can delete other's
+        // any member may delete their own messages, but only moderators can delete other's
 
         const membershipReq = author.equals(msg.getAuthor()) ?
                                                                 this.getMembers()
