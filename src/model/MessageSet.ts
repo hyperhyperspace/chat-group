@@ -1,4 +1,4 @@
-import { Authorization, Authorizer, CausalSet, Hash, HashedObject, Identity } from '@hyper-hyper-space/core';
+import { Authorization, Authorizer, CausalSet, ClassRegistry, Hash, HashedObject, Identity } from '@hyper-hyper-space/core';
 import { Message } from './Message';
 
 
@@ -128,6 +128,6 @@ class MessageSet extends CausalSet<Message> {
 
 }
 
-HashedObject.registerClass(MessageSet.className, MessageSet);
+ClassRegistry.register(MessageSet.className, MessageSet);
 
 export { MessageSet }

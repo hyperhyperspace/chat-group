@@ -1,4 +1,4 @@
-import { HashedObject, Identity } from '@hyper-hyper-space/core';
+import { ClassRegistry, HashedObject, Identity } from '@hyper-hyper-space/core';
 
 
 class Message extends HashedObject {
@@ -33,6 +33,6 @@ class Message extends HashedObject {
 
 }
 
-HashedObject.registerClass(Message.className, Message);
+ClassRegistry.register(Message.className, Message);
 
 export { Message };

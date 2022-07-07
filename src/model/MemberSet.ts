@@ -1,4 +1,4 @@
-import { Authorizer, Authorization, CausalSet, Hash, HashedObject, Identity } from '@hyper-hyper-space/core';
+import { Authorizer, Authorization, CausalSet, Hash, HashedObject, Identity, ClassRegistry } from '@hyper-hyper-space/core';
 
 import { Feature } from './ChatConfig';
 
@@ -119,6 +119,6 @@ class MemberSet extends CausalSet<Identity> {
     }
 }
 
-HashedObject.registerClass(MemberSet.className, MemberSet);
+ClassRegistry.register(MemberSet.className, MemberSet);
 
 export { MemberSet };

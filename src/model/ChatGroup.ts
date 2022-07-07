@@ -1,4 +1,4 @@
-import { CausalSet, HashedObject, Identity, MultiAuthorCausalSet, MutableObject, PeerNode, SingleAuthorCausalSet, SpaceEntryPoint } from '@hyper-hyper-space/core';
+import { CausalSet, ClassRegistry, HashedObject, Identity, MultiAuthorCausalSet, MutableObject, MeshNode, SingleAuthorCausalSet, SpaceEntryPoint } from '@hyper-hyper-space/core';
 import { Feature, AllFeatures } from './ChatConfig';
 import { MemberSet } from './MemberSet';
 import { MessageSet } from './MessageSet';
@@ -14,7 +14,7 @@ class ChatGroup extends HashedObject implements SpaceEntryPoint {
 
     messages?: MessageSet;
 
-    _node?: PeerNode;
+    _node?: MeshNode;
 
     _mutables?: Array<MutableObject>;
 
@@ -137,7 +137,7 @@ class ChatGroup extends HashedObject implements SpaceEntryPoint {
             throw new Error('Cannot start sync: a local store has not been configured.')
         }
 
-        this._node = new PeerNode(resources);
+        this._node = new MeshNode(resources);
         
         this._node.broadcast(this);
         this._node.sync(this);
@@ -158,26 +158,6 @@ class ChatGroup extends HashedObject implements SpaceEntryPoint {
     getMessages() {
         return this.messages as MessageSet;
     }
-
-    watchForChanges(auto: boolean): boolean {
-        
-        for (const mut of (this._mutables as Array<MutableObject>).values()) {
-            mut.watchForChanges(auto);
-        }
-
-        return auto;
-    }
-
-    async loadAllChanges() {
-        for (const mut of (this._mutables as Array<MutableObject>).values()) {
-            await mut.loadAllChanges();
-        }
-    }
-
-    async loadAndWatchForChanges() {
-        this.watchForChanges(true);
-        return this.loadAllChanges();
-    }
     
     async stopSync(): Promise<void> {
         this._node?.stopBroadcast(this);
@@ -185,4 +165,4 @@ class ChatGroup extends HashedObject implements SpaceEntryPoint {
     }
 }
 
-HashedObject.registerClass(ChatGroup.className, ChatGroup);
+ClassRegistry.register(ChatGroup.className, ChatGroup);
