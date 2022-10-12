@@ -10,7 +10,7 @@ class MessageSet extends CausalSet<Message> {
     members?    : CausalSet<Identity>;
 
     constructor(moderators?: CausalSet<Identity>, members?: CausalSet<Identity>) {
-        super([Message.className]);
+        super({acceptedTypes: [Message.className]});
 
         if (moderators !== undefined) {
             this.moderators = moderators;
