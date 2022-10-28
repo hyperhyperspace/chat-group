@@ -163,6 +163,10 @@ class ChatGroup extends HashedObject implements SpaceEntryPoint {
         this._node?.stopBroadcast(this);
         this._node?.stopSync(this);
     }
+
+    getName() {
+        return undefined;
+    }
 }
 
 ClassRegistry.register(ChatGroup.className, ChatGroup);

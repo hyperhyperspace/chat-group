@@ -10,7 +10,7 @@ class MemberSet extends CausalSet<Identity> {
     enabledFeatures? : CausalSet<Feature>;
     
     constructor(moderators?: CausalSet<Identity>, enabledFeatures?: CausalSet<Feature>) {
-        super({acceptedTypes: [Identity.className]});
+        super({acceptedTypes: [Identity.className], mutableWriters: moderators});
 
         if (moderators !== undefined) {
             this.moderators = moderators;
